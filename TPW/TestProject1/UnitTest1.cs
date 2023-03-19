@@ -1,3 +1,5 @@
+using program;
+
 namespace TestProject1
 {
     [TestClass]
@@ -6,7 +8,7 @@ namespace TestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            program.Calculator a = new program.Calculator();
+            Calculator a = new Calculator();
             int y = a.add(2, 2);
             Assert.AreEqual(y, 4);
         }
@@ -14,9 +16,26 @@ namespace TestProject1
         [TestMethod]
         public void TestMethod2()
         {
-            program.Calculator b = new program.Calculator();
+            Calculator b = new Calculator();
             int y = b.subtract(2, 2);
             Assert.AreEqual(y, 0);
+        }
+
+        [TestMethod]
+        public void TestMultiplyMethod()
+        {
+            Calculator calc = new Calculator();
+            int test = calc.multiply(3, 3);
+            Assert.AreEqual(test, 9);
+        }
+
+        [TestMethod]
+        public void TestDivideMethod()
+        {
+            Calculator calc = new Calculator();
+            int test = calc.divide(6, 3);
+            Assert.AreEqual(test, 2);
+
         }
     }
 }
