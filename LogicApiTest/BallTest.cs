@@ -8,7 +8,7 @@ namespace LogicTest
         [SetUp]
         public void Setup()
         {
-           
+            Ball ball = new Ball();
         }
 
         [Test]

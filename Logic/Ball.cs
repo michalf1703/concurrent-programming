@@ -15,12 +15,6 @@ namespace Logic
         public double ySpeed { get; set; }
         public double r { get; set; }
 
-        //generate random numbers to determine the position and speed of the ball
-        Random rng = new Random();
-        public double generateRandomDouble(double min, double max)
-        {
-            return rng.NextDouble() * (max - min) + min;
-        }
 
         public Ball()
         {
@@ -49,6 +43,14 @@ namespace Logic
 
             x = x2;
             y = y2;
+        }
+
+
+        //generate random numbers to determine the position and speed of the ball
+        Random rng = new Random();
+        public double generateRandomDouble(double min, double max)
+        {
+            return rng.NextDouble() * (max - min) + min;
         }
     }
 }
