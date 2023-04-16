@@ -21,5 +21,6 @@ namespace LogicTest
             Assert.AreEqual(ball.x, positionX + ball.xSpeed);
             Assert.AreEqual(ball.y, positionY + ball.ySpeed);
         }
+
     }
 }

@@ -5,13 +5,16 @@ namespace LogicTest
 {
     internal class AreaTest
     {
-        
+        LogicAbstractApi test = LogicAbstractApi.CreateApi();
         [SetUp]
         public void Setup()
         {
-            Area area = new Area(700);
+            Area area = new Area(700);        
             area.addBalls(1);
             Assert.AreEqual(area.balls.Count, 1);
+            Assert.NotNull(test);
+            test.createBalls(3);
+            Assert.AreEqual(test.GetBalls().Count, 3);
         }
 
         [Test]
