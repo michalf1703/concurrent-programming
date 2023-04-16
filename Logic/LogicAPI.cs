@@ -17,8 +17,6 @@ namespace Logic
         }
 
     }
-    //class LogicApi inherits form abstract class LogicAbstractApi
-    //iternal class -> this class is only visible within the project where it is defined
 
     internal class LogicApi : LogicAbstractApi
     {
@@ -30,7 +28,6 @@ namespace Logic
         public LogicApi(DataAbstractAPI dataAPI)
         {
             _dataAPI = dataAPI;
-        //500 --> size of our area 
             _region = new Area(500);
         }
 
