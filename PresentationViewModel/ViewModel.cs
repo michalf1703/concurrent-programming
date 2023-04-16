@@ -135,7 +135,7 @@ namespace ViewModel
             }
         }
 
-        
+
         public string ErrorMessage
         {
             get

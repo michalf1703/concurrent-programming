@@ -31,6 +31,7 @@ namespace Logic
             _region = new Area(500);
         }
 
+        //interactive operation 
         public override void createBalls(int count)
         {
             _region.addBalls(count);
