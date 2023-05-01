@@ -36,5 +36,7 @@ namespace LogicTest
             Assert.AreNotEqual(region.balls[1].x, pX2);
             Assert.AreNotEqual(region.balls[1].y, pY2);
         }
+
+       
     }
 }
