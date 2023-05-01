@@ -1,53 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Text;
+using System.Threading;
 using Data;
-using System.Threading.Tasks;
 
 namespace Logic
 {
-    public abstract class LogicAbstractApi
+    public abstract class LogicAPI : IObserver<int>, IObservable<int>
     {
-        public abstract void createBalls(int count);
-        public abstract List<Ball> GetBalls();
+        public abstract void AddBallsAndStart(int BallsAmount);
+        public abstract double getBallPositionX(int ballId);
+        public abstract double getBallPositionY(int ballId);
+        public abstract int getBallRadius(int ballId);
 
-        public abstract void start();
-        public static LogicAbstractApi CreateApi(DataAbstractAPI data = default(DataAbstractAPI))
+        public abstract IDisposable Subscribe(IObserver<int> observer);
+        public abstract void OnCompleted();
+        public abstract void OnError(Exception error);
+        public abstract void OnNext(int value);
+
+
+        public static LogicAPI CreateLayer(DataAbstractAPI data = default(DataAbstractAPI))
         {
-            return new LogicApi(data == null ? DataAbstractAPI.CreateAPI() : data);
+            return new BusinessLogic(data == null ? DataAbstractAPI.CreateDataApi() : data);
         }
 
-    }
-
-    internal class LogicApi : LogicAbstractApi
-    {
-
-        private DataAbstractAPI _dataAPI;
-        private Task _changePosition;
-        private Area _region;
-
-        public LogicApi(DataAbstractAPI dataAPI)
+        public class BallChaneEventArgs : EventArgs
         {
-            _dataAPI = dataAPI;
-            _region = new Area(500);
+            public int ballId { get; set; }
         }
 
-        //interactive operation 
-        public override void createBalls(int count)
+        private class BusinessLogic : LogicAPI, IObservable<int>
         {
-            _region.addBalls(count);
-        }
+            private readonly DataAbstractAPI dataAPI;
+            private IDisposable unsubscriber;
+            static object _lock = new object();
+            private IObservable<EventPattern<BallChaneEventArgs>> eventObservable = null;
+            public event EventHandler<BallChaneEventArgs> BallChanged;
 
-        public override List<Ball> GetBalls()
-        {
-            return _region.balls;
-        }
-
-        public override void start()
-        {
-            if (_region.balls.Count > 0)
+            public BusinessLogic(DataAbstractAPI dataAPI)
             {
-                _changePosition = Task.Run(_region.MoveBalls);
+                eventObservable = Observable.FromEventPattern<BallChaneEventArgs>(this, "BallChanged");
+                this.dataAPI = dataAPI;
+                Subscribe(dataAPI);
             }
+
+            public override double getBallPositionX(int ballId)
+            {
+                return this.dataAPI.getBallPositionX(ballId);
+            }
+
+            public override double getBallPositionY(int ballId)
+            {
+                return this.dataAPI.getBallPositionY(ballId);
+            }
+
+            public override int getBallRadius(int ballId)
+            {
+                return this.dataAPI.getBallRadius(ballId);
+            }
+
+
+            public override void AddBallsAndStart(int BallsAmount)
+            {
+                dataAPI.createBalls(BallsAmount);
+            }
+
+            #region observer
+
+            public virtual void Subscribe(IObservable<int> provider)
+            {
+                if (provider != null)
+                    unsubscriber = provider.Subscribe(this);
+            }
+
+            public override void OnNext(int value)
+            {
+                Monitor.Enter(_lock);
+                try
+                {
+                    Collision collisionControler = new Collision(dataAPI.getBallPositionX(value), dataAPI.getBallPositionY(value), dataAPI.getBallSpeedX(value), dataAPI.getBallSpeedY(value), dataAPI.getBallRadius(value), 10);
+
+                    for (int i = 1; i <= dataAPI.getBallsAmount(); i++)
+                    {
+                        if (value != i)
+                        {
+                            double otherBallX = dataAPI.getBallPositionX(i);
+                            double otherBallY = dataAPI.getBallPositionY(i);
+                            double otherBallSpeedX = dataAPI.getBallSpeedX(i);
+                            double otherBallSpeedY = dataAPI.getBallSpeedY(i);
+                            int otherBallRadius = dataAPI.getBallRadius(i);
+                            double otherBallMass = dataAPI.getBallMass(i);
+
+                            if (collisionControler.IsCollision(otherBallX + otherBallSpeedX, otherBallY + otherBallSpeedY, otherBallRadius, true))
+                            {
+                                if (!collisionControler.IsCollision(otherBallX, otherBallY, otherBallRadius, false))
+                                {
+                                    System.Diagnostics.Trace.WriteLine("Ball " + value + " hit ball " + i);
+
+                                    Vector2[] newVelocity = collisionControler.ImpulseSpeed(otherBallX, otherBallY, otherBallSpeedX, otherBallSpeedY, otherBallMass);
+
+                                    dataAPI.setBallSpeed(value, newVelocity[0].X, newVelocity[0].Y);
+                                    dataAPI.setBallSpeed(i, newVelocity[1].Y, newVelocity[1].Y);
+                                }
+                            }
+                        }
+                    }
+
+                    int boardSize = dataAPI.getBoardSize();
+
+                    if (collisionControler.IsTouchingBoundariesX(boardSize))
+                    {
+                        dataAPI.setBallSpeed(value, -dataAPI.getBallSpeedX(value), dataAPI.getBallSpeedY(value));
+                    }
+
+                    if (collisionControler.IsTouchingBoundariesY(boardSize))
+                    {
+                        dataAPI.setBallSpeed(value, dataAPI.getBallSpeedX(value), -dataAPI.getBallSpeedY(value));
+                    }
+                    BallChanged?.Invoke(this, new BallChaneEventArgs() { ballId = value });
+                }
+                catch (SynchronizationLockException exception)
+                {
+                    throw new Exception("Checking collision synchronization lock not working", exception);
+                }
+                finally
+                {
+                    Monitor.Exit(_lock);
+                }
+            }
+
+            public override void OnCompleted()
+            {
+                Unsubscribe();
+            }
+
+            public override void OnError(Exception error)
+            {
+                throw error;
+            }
+
+            public virtual void Unsubscribe()
+            {
+                unsubscriber.Dispose();
+            }
+
+            #endregion
+
+            #region observable
+            public override IDisposable Subscribe(IObserver<int> observer)
+            {
+                return eventObservable.Subscribe(x => observer.OnNext(x.EventArgs.ballId), ex => observer.OnError(ex), () => observer.OnCompleted());
+            }
+            #endregion
+
         }
     }
 }
