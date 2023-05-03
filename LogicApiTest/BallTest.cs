@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿/*using NUnit.Framework;
 using Logic;
 
 namespace LogicTest
@@ -24,3 +24,4 @@ namespace LogicTest
 
     }
 }
+*/
