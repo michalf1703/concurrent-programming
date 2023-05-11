@@ -1,18 +1,35 @@
 using NUnit.Framework;
+using Data;
 
-namespace DataApiTest
+namespace DataTest
 {
     internal class DataApiTest
     {
+        private DataAbstractAPI testDataApi;
         [SetUp]
         public void Setup()
         {
+            testDataApi = DataAbstractAPI.CreateDataApi();
         }
 
         [Test]
-        public void Test1()
+        public void createBallsTest()
         {
-            Assert.Pass();
+
+            testDataApi.createBalls(2);
+
+            Assert.AreEqual(testDataApi.getBallsAmount(), 2);
+        }
+
+        [Test]
+        public void ballsSpeedTest()
+        {
+            testDataApi.createBalls(1);
+
+            testDataApi.setBallSpeed(1, 2, 2);
+
+            Assert.AreEqual(testDataApi.getBallSpeedX(1), 2);
+            Assert.AreEqual(testDataApi.getBallSpeedY(1), 2);
         }
     }
 }
