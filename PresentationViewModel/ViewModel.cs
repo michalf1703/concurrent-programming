@@ -12,19 +12,23 @@ using System.Collections.ObjectModel;
 
 namespace ViewModel
 {
-    //The ViewModel includes an implementation of the INotifyPropertyChanged interface,
-    //which is used to notify the view of changes to the model
+    // Klasa ViewModel implementuje interfejs INotifyPropertyChanged, który jest używany do powiadamiania widoku o zmianach w modelu.
     public class ViewModel : INotifyPropertyChanged
     {
+        // Referencja do modelu
         private ModelAPI modelApi;
+        // Kolekcja kulek
         public ObservableCollection<IBall> Balls { get; set; }
 
+        // Komenda wywoływana po kliknięciu przycisku "Start"
         public ICommand StartButtonClick { get; set; }
+        // Tekst wpisywany przez użytkownika w polu tekstowym
         private string inputText;
 
+        // Stan przycisku "Start"
         private bool state;
 
-        //The State property is used to enable/disable the start button in the view
+        // Właściwość stanu przycisku "Start", używana do włączania/wyłączania przycisku w widoku.
         public bool State
         {
             get
@@ -38,7 +42,7 @@ namespace ViewModel
             }
         }
 
-        //The InputText property is bound to a text box in the view
+        // Właściwość tekstu wpisywanego przez użytkownika w polu tekstowym
         public string InputText
         {
             get
@@ -52,9 +56,10 @@ namespace ViewModel
             }
         }
 
+        // Właściwość wykorzystywana do wyświetlania komunikatów o błędach w widoku
         private string errorMessage;
 
-        //The ErrorMessage property is used to display validation errors in the view
+        // Właściwość służąca do wyświetlania komunikatów o błędach w widoku
         public string ErrorMessage
         {
             get
@@ -68,29 +73,38 @@ namespace ViewModel
             }
         }
 
+        // Zdarzenie PropertyChangedEventHandler wywoływane w momencie zmiany wartości właściwości.
         public event PropertyChangedEventHandler PropertyChanged;
 
+        // Konstruktor domyślny ViewModel
         public ViewModel() : this(ModelAPI.CreateApi())
         {
 
         }
 
+        // Konstruktor ViewModel z parametrem modelu
         public ViewModel(ModelAPI baseModel)
         {
+            // Ustawienie początkowego stanu przycisku "Start"
             State = true;
+            // Przypisanie referencji do modelu
             this.modelApi = baseModel;
-            StartButtonClick = new UserCommand(() => StartButtonClickHandler());
+            // Inicjalizacja kolekcji kulek
             Balls = new ObservableCollection<IBall>();
-            //Subscribe to the model's IObservable<IBall> to get notified of changes
+            // Subskrypcja do IObservable<IBall> modelu w celu otrzymywania powiadomień o zmianach.
             IDisposable observer = modelApi.Subscribe(x => Balls.Add(x));
+            // Utworzenie nowej komendy i zdefiniowanie jej akcji wywołującej metodę StartButtonClickHandler()
+            StartButtonClick = new UserCommand(() => StartButtonClickHandler());
         }
 
+        // Ta metoda jest wywoływana po kliknięciu przycisku "Start"
+        // Dodaje kulki do modelu i uruchamia symulację
         private void StartButtonClickHandler()
         {
             modelApi.AddBallsAndStart(readFromTextBox());
         }
 
-        //Parse the user input from the text box and validate it
+        // Parsuje wprowadzone przez użytkownika dane z pola tekstowego i waliduje je
         public int readFromTextBox()
         {
             int number;
@@ -109,7 +123,7 @@ namespace ViewModel
             return 0;
         }
 
-        //Raise the PropertyChanged event to notify the view of changes to the properties
+        // Wywołuje zdarzenie PropertyChanged, aby powiadomić widok o zmianach właściwości
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
