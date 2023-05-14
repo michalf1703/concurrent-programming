@@ -113,9 +113,9 @@ namespace ViewModel
                 number = Int32.Parse(InputText);
                 ErrorMessage = "";
                 State = false;
-                if (number > 25)
+                if (number > 20)
                 {
-                    return 25;
+                    return 20;
                 }
                 return number;
             }
