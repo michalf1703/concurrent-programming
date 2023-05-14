@@ -14,6 +14,8 @@ namespace LogicTest
         private Vector2 testVector1;
         private Vector2 zeroVector;
         private Vector2 testSameVector;
+        private Vector2 divideVector;
+
 
         [SetUp]
         public void Setup()
@@ -22,6 +24,7 @@ namespace LogicTest
             testVector1 = new Vector2(11, 14);
             zeroVector = new Vector2(0, 0);
             testSameVector = new Vector2(11, 1);
+            divideVector = new Vector2(10, 6);
 
         }
 
@@ -68,6 +71,23 @@ namespace LogicTest
             Assert.AreEqual(zeroVector.GetHashCode(), -393098621);
             Assert.AreEqual(testSameVector.GetHashCode(), -2000565629);
         }
- 
+        [Test]
+        public void OperatorsTest()
+        {
+
+
+            Assert.AreEqual(testVector - zeroVector, new Vector2(11, 1));
+            Assert.AreEqual(testVector + zeroVector, new Vector2(11, 1));
+            Assert.AreEqual(zeroVector / testVector, new Vector2(0, 0));
+            Assert.AreEqual(testVector * testSameVector, new Vector2(121, 1));
+            Assert.AreEqual(-testVector, new Vector2(-11, -1));
+            Assert.AreEqual(testVector * 5, new Vector2(55, 5));
+            Assert.AreEqual(divideVector / 2, new Vector2(5, 3));
+            Assert.IsTrue(testVector == testSameVector);
+            Assert.IsFalse(testVector != testSameVector);
+            Assert.IsTrue(divideVector != testVector1);
+
+        }
+
     }
 }
