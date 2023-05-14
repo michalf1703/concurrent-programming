@@ -53,7 +53,7 @@ namespace Data
         }
 
         // Logika przesuwania kuli.
-        public void MoveBall()
+        public async void MoveBall()
         {
             while (true)
             {
