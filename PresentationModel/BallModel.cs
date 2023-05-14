@@ -8,38 +8,38 @@ using Logic;
 
 namespace Model
 {
-    // Class implementing the IBall interface
+    // Klasa implementująca interfejs IBall
 
     public class BallInModel : IBall
     {
-        // Properties
-        public int Diameter { get; } // Read-only property for the ball's diameter
-        public event PropertyChangedEventHandler PropertyChanged; // Event that is raised when a property value changes
+        // Właściwości
+        public int Diameter { get; } // Właściwość tylko do odczytu dla średnicy piłki
+        public event PropertyChangedEventHandler PropertyChanged; // Zdarzenie wywoływane, gdy zmieni się wartość właściwości
 
-        // Constructor
+        // Konstruktor
         public BallInModel(double top, double left, int radius)
         {
-            // Initialize the object with the given top, left, and radius values
+            // Inicjalizacja obiektu z wartościami top, left i radius
             Top = top;
             Left = left;
             Diameter = radius * 2;
         }
 
-        // Fields
-        private double top; // The top position of the ball
-        private double left; // The left position of the ball
+        // Pola
+        private double top; // Pozycja top piłki
+        private double left; // Pozycja left piłki
 
-        // Properties with change notification
+        // Właściwości z powiadomieniem o zmianie
         public double Top
         {
             get { return top; }
             set
             {
-                // Check if the new value is the same as the current value
+                // Sprawdzenie, czy nowa wartość jest taka sama jak bieżąca wartość
                 if (top == value)
                     return;
 
-                // If not, update the value and raise the PropertyChanged event
+                // Jeśli nie, zaktualizuj wartość i wywołaj zdarzenie PropertyChanged
                 top = value;
                 RaisePropertyChanged();
             }
@@ -50,29 +50,28 @@ namespace Model
             get { return left; }
             set
             {
-                // Check if the new value is the same as the current value
+                // Sprawdzenie, czy nowa wartość jest taka sama jak bieżąca wartość
                 if (left == value)
                     return;
 
-                // If not, update the value and raise the PropertyChanged event
+                // Jeśli nie, zaktualizuj wartość i wywołaj zdarzenie PropertyChanged
                 left = value;
                 RaisePropertyChanged();
             }
         }
 
-        // Method for moving the ball to a new position
+        // Metoda służąca do przenoszenia piłki do nowej pozycji
         public void Move(double poitionX, double positionY)
         {
-            // Update the ball's position
+            // Zaktualizuj pozycję piłki
             Left = poitionX;
             Top = positionY;
         }
 
-        // Method for raising the PropertyChanged event
+        // Metoda wywołująca zdarzenie PropertyChanged
         private void RaisePropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }
-}

@@ -5,14 +5,15 @@ using System.Windows.Input;
 
 namespace ViewModel
 {
-    //UserCommand class is a class that allows to react to user actions in the user interface.
+    // Klasa UserCommand pozwala na reakcję na akcje użytkownika w interfejsie użytkownika.
     internal class UserCommand : ICommand
     {
-        //action, which be performed when the user invokes the command
+        // Pole execute przechowuje metodę, która zostanie wykonana po wywołaniu komendy.
         private readonly Action execute;
-        //boolean function that determines whether this action can be performed
+        // Pole canExecute to funkcja boolowska, która określa, czy można wywołać tę komendę.
         private readonly Func<bool> canExecute;
 
+        // Zdarzenie CanExecuteChanged pozwala na odświeżenie widoku, gdy zmienia się możliwość wywołania komendy.
         public event EventHandler CanExecuteChanged;
 
         public UserCommand(Action execute, Func<bool> canExecute)
@@ -23,26 +24,30 @@ namespace ViewModel
 
         public UserCommand(Action execute) : this(execute, null) { }
 
-        ////Execute - method of ICommand interface
+        // Implementacja metody Execute interfejsu ICommand, która wywołuje metodę execute.
         public virtual void Execute(object obj)
         {
             this.execute();
         }
-        //CanExecute - method of ICommand interface
+
+        // Implementacja metody CanExecute interfejsu ICommand, która sprawdza, czy można wywołać komendę.
         public bool CanExecute(object obj)
         {
             if (this.canExecute == null)
             {
+                // Jeśli canExecute jest puste, zwraca true.
                 return true;
             }
             if (obj == null)
             {
+                // Jeśli obj jest puste, zwraca wartość canExecute.
                 return this.canExecute();
             }
+            // Zwraca wartość canExecute.
             return this.canExecute();
         }
-        //The RaiseCanExecuteChanged method is used to fire the CanExecuteChanged event,
-        //which allows the view to be refreshed when the ability to perform an action changes.
+
+        // Metoda RaiseCanExecuteChanged służy do wywołania zdarzenia CanExecuteChanged.
         public void RaiseCanExecuteChanged()
         {
             this.CanExecuteChanged?.Invoke(this, EventArgs.Empty);
