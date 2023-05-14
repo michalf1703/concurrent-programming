@@ -7,15 +7,15 @@ namespace Data
 {
     public class BallRepository
     {
-        public List<Ball> balls { get; set; } // A list of all the balls created in the repository
-        public int BoardSize { get; private set; } = 515; // The size of the game board, which is fixed at 515
+        public List<Ball> balls { get; set; } // Lista wszystkich piłek utworzonych w repozytorium
+        public int BoardSize { get; private set; } = 515; // Rozmiar planszy gry, który jest stały i wynosi 515
 
         public BallRepository()
         {
-            balls = new List<Ball>(); // Initialize the list of balls
+            balls = new List<Ball>(); // Inicjalizacja listy piłek
         }
 
-        // Creates a specified number of balls and adds them to the list
+        // Tworzy określoną liczbę piłek i dodaje je do listy
         public void CreateBalls(int ballsAmount)
         {
             for (int i = 0; i < ballsAmount; i++)
@@ -24,7 +24,7 @@ namespace Data
             }
         }
 
-        // Gets a ball by its unique identifier
+        // Pobiera piłkę na podstawie jej unikalnego identyfikatora
         public Ball GetBall(int ballId)
         {
             return balls[ballId - 1];
