@@ -44,20 +44,26 @@ namespace LogicTest
         {
             Assert.IsTrue(zeroVector.IsZero());
             Assert.IsFalse(testVector.IsZero());
+            Assert.IsFalse(testVector1.IsZero());
+            Assert.IsFalse(testSameVector.IsZero());
+
         }
         [Test]
 
         public void ToStringTest()
         {
-
-
             Assert.AreEqual(testVector.ToString(), "[11, 1]") ;
+            Assert.AreEqual(testVector1.ToString(), "[11, 14]");
+            Assert.AreEqual(zeroVector.ToString(), "[0, 0]");
+            Assert.AreEqual(testSameVector.ToString(), "[11, 1]");
+            Assert.AreEqual(divideVector.ToString(), "[10, 6]");
         }
         [Test]
 
         public void EqualsTest()
         {
             Assert.IsTrue(testVector.Equals(testSameVector));
+            Assert.AreEqual(testVector.Equals(testVector), testVector.Equals(testSameVector));
             Assert.IsTrue(testVector.Equals(testVector));
             Assert.IsFalse(testVector.Equals(testVector1));
         }
@@ -76,11 +82,11 @@ namespace LogicTest
         {
 
 
-            Assert.AreEqual(testVector - zeroVector, new Vector2(11, 1));
-            Assert.AreEqual(testVector + zeroVector, new Vector2(11, 1));
-            Assert.AreEqual(zeroVector / testVector, new Vector2(0, 0));
+            Assert.AreEqual(testVector - zeroVector, testVector);
+            Assert.AreEqual(testVector + zeroVector, testVector);
+            Assert.AreEqual(zeroVector / testVector, zeroVector);
             Assert.AreEqual(testVector * testSameVector, new Vector2(121, 1));
-            Assert.AreEqual(-testVector, new Vector2(-11, -1));
+            Assert.AreEqual(-testVector, -testSameVector);
             Assert.AreEqual(testVector * 5, new Vector2(55, 5));
             Assert.AreEqual(divideVector / 2, new Vector2(5, 3));
             Assert.IsTrue(testVector == testSameVector);
