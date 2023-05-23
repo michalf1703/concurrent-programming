@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Logic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reactive.Linq;
 using System.Reactive;
-using Logic;
-
+using System.Reactive.Linq;
 
 namespace Model
 {
@@ -46,7 +45,7 @@ namespace Model
             public ModelBall()
             {
                 logicApi = logicApi ?? LogicAPI.CreateLayer();
-                IDisposable observer = logicApi.Subscribe(x => Balls[x.Id - 1].Move1(x.Position));
+                IDisposable observer = logicApi.Subscribe(x => Balls[x.Id - 1].Move(x.PositionX, x.PositionY));
                 eventObservable = Observable.FromEventPattern<BallChaneEventArgs>(this, "BallChanged");
             }
 

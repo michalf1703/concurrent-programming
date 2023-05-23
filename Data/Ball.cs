@@ -12,10 +12,13 @@ namespace Data
     {
         public override int Id { get; }
         private Vector2 _position;
-        public override Vector2 Speed { get; set; }
-        public override Vector2 Position { get { return _position; } set { _position = value; } }
-        public override Vector2 Move { get; set; }
+        public override double PositionX { get; set; }
+        public override double PositionY { get; set; }
+        public override double SpeedX { get; set; }
+        public override double SpeedY { get; set; }
 
+        public override double MoveX { get; set; }
+        public override double MoveY { get; set; }
 
         public override int Radius { get; } = 15;
         public override double Mass { get; } = 10;
@@ -38,9 +41,11 @@ namespace Data
             stopwatch = new Stopwatch();
             observers = new List<IObserver<IBall>>();
 
-            this.Position = new Vector2(random.Next(1, 500), random.Next(1, 500));
-            this.Speed = new Vector2((float)(random.NextDouble() * (0.2 - 0) + 0), (float)(random.NextDouble() * (0.2 - 0) + 0));
+            this.PositionX = Convert.ToDouble(random.Next(1, 500));
+            this.PositionY = Convert.ToDouble(random.Next(1, 500));
 
+            this.SpeedX = random.NextDouble() * (0.2 - 0) + 0;
+            this.SpeedY = random.NextDouble() * (0.2 - 0) + 0;
         }
 
 
@@ -78,17 +83,20 @@ namespace Data
 
         public void ChangeBallPosition(long time)
         {
-            Vector2 move;
+
             if (time > 0)
             {
-                move = Speed / 20 * time;
+                MoveX = SpeedX / 5 * time;
+                MoveY = SpeedY / 5 * time;
             }
             else
             {
-                move = Speed / 20;
+                MoveX = SpeedX / 5;
+                MoveY = SpeedY / 5;
             }
 
-            _position += move;
+            PositionX += MoveX;
+            PositionY += MoveY;
         }
 
 

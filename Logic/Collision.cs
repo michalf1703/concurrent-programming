@@ -7,11 +7,7 @@ namespace Logic
     {
         public static bool IsCollision(IBall current, IBall other)
         {
-            Vector2 currentPosition = current.Position + current.Move;
-            Vector2 otherPosition = other.Position + other.Move;
-
-            double distance = Math.Sqrt(Math.Pow(currentPosition.X - otherPosition.X, 2) + Math.Pow(currentPosition.Y - otherPosition.Y, 2));
-
+            double distance = Math.Sqrt(Math.Pow(current.PositionX + current.MoveX - (other.PositionX + other.MoveX), 2) + Math.Pow(current.PositionY + current.MoveY - (other.PositionY + other.MoveY), 2));
 
             if (Math.Abs(distance) <= current.Radius + other.Radius)
             {
@@ -23,30 +19,32 @@ namespace Logic
 
         public static void IsTouchingBoundaries(IBall ball, int boardSize)
         {
-            Vector2 newPos = ball.Position + ball.Move;
+            double newX = ball.PositionX + ball.MoveX;
 
-            if ((newPos.X > boardSize && ball.Position.X > 0) || (newPos.X < 0 && ball.Position.X < 0))
+            if ((newX > boardSize && ball.PositionX > 0) || (newX < 0 && ball.PositionX < 0))
             {
-                ball.Move = new Vector2(-ball.Move.X, ball.Move.Y);
+                ball.SpeedX *= -1;
             }
 
-            if ((newPos.Y > boardSize && ball.Position.Y > 0) || (newPos.Y < 0 && ball.Position.Y < 0))
+            double newY = ball.PositionY + ball.MoveY;
+
+            if ((newY > boardSize && ball.PositionY > 0) || (newY < 0 && ball.PositionY < 0))
             {
-                ball.Move = new Vector2(ball.Move.X, -ball.Move.Y);
+                ball.SpeedY *= -1;
             }
+
         }
-
-
 
         public static void ImpulseSpeed(IBall current, IBall other)
         {
-            Vector2 currentVelocity = current.Speed;
-            Vector2 currentPosition = current.Position;
+            Vector2 currentVelocity = new Vector2(current.SpeedX, current.SpeedY);
+            Vector2 currentPosition = new Vector2(current.PositionX, current.PositionY);
             double currentMass = current.Mass;
 
-            Vector2 otherVelocity = other.Speed;
-            Vector2 otherPosition = other.Position;
+            Vector2 otherVelocity = new Vector2(other.SpeedX, other.SpeedY);
+            Vector2 otherPosition = new Vector2(other.PositionX, other.PositionY);
             double otherMass = other.Mass;
+
 
             double fDistance = Math.Sqrt((currentPosition.X - otherPosition.X) * (currentPosition.X - otherPosition.X) + (currentPosition.Y - otherPosition.Y) * (currentPosition.Y - otherPosition.Y));
 
@@ -68,11 +66,17 @@ namespace Logic
             double m1 = (dpNorm1 * (currentMass - otherMass) + 2.0f * otherMass * dpNorm2) / (currentMass + otherMass);
             double m2 = (dpNorm2 * (otherMass - currentMass) + 2.0f * currentMass * dpNorm1) / (currentMass + otherMass);
 
-            Vector2 currentNewVelocity = new Vector2(tx * dpTan1 + nx * m1, ty * dpTan1 + ny * m1);
-            Vector2 otherNewVelocity = new Vector2(tx * dpTan2 + nx * m2, ty * dpTan2 + ny * m2);
+            double currentNewVelocityX = tx * dpTan1 + nx * m1;
+            double currentNewVelocityY = ty * dpTan1 + ny * m1;
 
-            current.Speed = currentNewVelocity;
-            other.Speed = otherNewVelocity;
+            double otherNewVelocityX = tx * dpTan2 + nx * m2;
+            double otherNewVelocityY = ty * dpTan2 + ny * m2;
+
+            current.SpeedX = currentNewVelocityX;
+            current.SpeedY = currentNewVelocityY;
+
+            other.SpeedX = otherNewVelocityX;
+            other.SpeedY = otherNewVelocityY;
         }
     }
 }

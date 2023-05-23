@@ -11,9 +11,13 @@ namespace Data
     public abstract class IBall : IObservable<IBall>
     {
         public abstract int Id { get; }
-        public abstract Vector2 Position { get; set; }
-        public abstract Vector2 Speed { get; set; }
-        public abstract Vector2 Move { get; set; }
+        public abstract double PositionX { get; set; }
+        public abstract double PositionY { get; set; }
+        public abstract double SpeedX { get; set; }
+        public abstract double SpeedY { get; set; }
+
+        public abstract double MoveX { get; set; }
+        public abstract double MoveY { get; set; }
         public abstract int Radius { get; }
         public abstract double Mass { get; }
         //public 
