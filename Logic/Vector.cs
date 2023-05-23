@@ -6,67 +6,57 @@ namespace Logic
 {
     public struct Vector2
     {
-        // Statyczne, tylko do odczytu wektory, które są powszechnie używane
-        public static readonly Vector2 Zero = new Vector2(0, 0);  // Wektor o wartości X i Y równych 0
-        public static readonly Vector2 One = new Vector2(1, 1);   // Wektor o wartości X i Y równych 1
-        public static readonly Vector2 Up = new Vector2(0f, 1f);  // Wektor skierowany w górę (o wartości Y równym 1)
-        public static readonly Vector2 Down = new Vector2(0f, -1f); // Wektor skierowany w dół (o wartości Y równym -1)
-        public static readonly Vector2 Left = new Vector2(-1f, 0f); // Wektor skierowany w lewo (o wartości X równym -1)
-        public static readonly Vector2 Right = new Vector2(1f, 0f); // Wektor skierowany w prawo (o wartości X równym 1)
+        public static readonly Vector2 Zero = new Vector2(0, 0);
+        public static readonly Vector2 One = new Vector2(1, 1);
+        public static readonly Vector2 Up = new Vector2(0f, 1f);
+        public static readonly Vector2 Down = new Vector2(0f, -1f);
+        public static readonly Vector2 Left = new Vector2(-1f, 0f);
+        public static readonly Vector2 Right = new Vector2(1f, 0f);
 
-        // Właściwości publiczne dla wartości X i Y
-        public float X { get; set; }  // Wartość X wektora
-        public float Y { get; set; }  // Wartość Y wektora
+        public float X { get; set; }
+        public float Y { get; set; }
 
-        // Konstruktor, który przyjmuje wartości X i Y jako double
         public Vector2(double x, double y)
         {
             X = (float)x;
             Y = (float)y;
         }
 
-        // Metoda statyczna, która oblicza odległość między dwoma punktami Vector2
-        public static float Distance(Vector2 punkt1, Vector2 punkt2)
+        public static float Distance(Vector2 point1, Vector2 point2)
         {
-            return (float)Math.Sqrt(DistanceSquared(punkt1, punkt2));
+            return (float)Math.Sqrt(DistanceSquared(point1, point2));
         }
 
-        // Metoda statyczna, która oblicza odległość między dwoma punktami Vector2 podniesioną do kwadratu
-        public static float DistanceSquared(Vector2 punkt1, Vector2 punkt2)
+        public static float DistanceSquared(Vector2 point1, Vector2 point2)
         {
-            float roznicaX = punkt1.X - punkt2.X;
-            float roznicaY = punkt1.Y - punkt2.Y;
-            return roznicaX * roznicaX + roznicaY * roznicaY;
+            float xDifference = point1.X - point2.X;
+            float yDifference = point1.Y - point2.Y;
+            return xDifference * xDifference + yDifference * yDifference;
         }
 
-        // Metoda, która sprawdza, czy wektor jest zerowy
         public bool IsZero()
         {
             return Equals(Zero);
         }
 
-        // Przeciążenie metody ToString(), aby wyświetlała wartości X i Y wektora
         public override string ToString()
         {
             return $"[{X}, {Y}]";
         }
 
-        // Metoda dekonstruująca Vector2 na jego wartości X i Y
         public void Deconstruct(out float x, out float y)
         {
             x = X;
             y = Y;
         }
 
-        // Metoda sprawdzająca, czy dwa obiekty Vector2 są równe
         public bool Equals(Vector2 other)
         {
-            float roznicaX = X - other.X;
-            float roznicaY = Y - other.Y;
-            return roznicaX * roznicaX + roznicaY * roznicaY < 9.99999944E-11f;
+            float xDiff = X - other.X;
+            float yDiff = Y - other.Y;
+            return xDiff * xDiff + yDiff * yDiff < 9.99999944E-11f;
         }
 
-        // Przeciążenie metody GetHashCode() w celu obliczenia unikalnego kodu skrótu dla wektora
         public override int GetHashCode()
         {
             int hashCode = 1861411795;
@@ -75,7 +65,6 @@ namespace Logic
             return hashCode;
         }
 
-        // Przeciążenie operatorów dodawania, odejmowania, mnożenia i dzielenia obiektów Vector2
         public static Vector2 operator +(Vector2 lhs, Vector2 rhs)
         {
             return new Vector2
@@ -147,5 +136,18 @@ namespace Logic
         {
             return !(lhs == rhs);
         }
+
+
+
+        public static implicit operator System.Numerics.Vector2(Vector2 v)
+        {
+            return new System.Numerics.Vector2((float)v.X, (float)v.Y);
+        }
+
+        public static implicit operator Vector2(System.Numerics.Vector2 v)
+        {
+            return new Vector2(v.X, v.Y);
+        }
+
     }
 }

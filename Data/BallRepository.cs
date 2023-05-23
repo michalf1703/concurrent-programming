@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static Data.IBall;
 
 namespace Data
 {
-    public class BallRepository
+    internal class BallRepository
     {
         public List<Ball> balls { get; set; } // Lista wszystkich piłek utworzonych w repozytorium
         public int BoardSize { get; private set; } = 515; // Rozmiar planszy gry, który jest stały i wynosi 515

@@ -10,181 +10,115 @@ using Data;
 
 namespace Logic
 {
-    // Klasa abstrakcyjna LogicAPI, która implementuje interfejsy IObserver i IObservable.
-    public abstract class LogicAPI : IObserver<int>, IObservable<int>
+    public abstract class LogicAPI : IObserver<IBall>, IObservable<IBall>
     {
-        // Metody abstrakcyjne, które muszą zostać zaimplementowane w klasach pochodnych.
         public abstract void AddBallsAndStart(int BallsAmount);
-        public abstract double getBallPositionX(int ballId);
-        public abstract double getBallPositionY(int ballId);
-        public abstract int getBallRadius(int ballId);
-
-        // Metody abstrakcyjne z interfejsu IObserver.
-        public abstract IDisposable Subscribe(IObserver<int> observer);
+        public abstract IDisposable Subscribe(IObserver<IBall> observer);
         public abstract void OnCompleted();
         public abstract void OnError(Exception error);
-        public abstract void OnNext(int value);
+        public abstract void OnNext(IBall ball);
 
-        // Metoda statyczna factory, która tworzy nową instancję BusinessLogic z instancją DataAbstractAPI.
+
         public static LogicAPI CreateLayer(DataAbstractAPI data = default(DataAbstractAPI))
         {
             return new BusinessLogic(data == null ? DataAbstractAPI.CreateDataApi() : data);
         }
 
-        // Klasa reprezentująca argumenty zdarzenia BallChanged.
         public class BallChaneEventArgs : EventArgs
         {
-            public int ballId { get; set; }
+            public IBall ball { get; set; }
         }
 
-        // Klasa BusinessLogic, która dziedziczy po klasie LogicAPI i implementuje interfejs IObservable.
-        private class BusinessLogic : LogicAPI, IObservable<int>
+        private class BusinessLogic : LogicAPI, IObservable<IBall>
         {
             private readonly DataAbstractAPI dataAPI;
             private IDisposable unsubscriber;
             static object _lock = new object();
             private IObservable<EventPattern<BallChaneEventArgs>> eventObservable = null;
             public event EventHandler<BallChaneEventArgs> BallChanged;
+            Dictionary<int, IBall> ballTree;
+            Barrier barrier;
 
             public BusinessLogic(DataAbstractAPI dataAPI)
             {
-                // Tworzenie obserwatora eventObservable.
                 eventObservable = Observable.FromEventPattern<BallChaneEventArgs>(this, "BallChanged");
                 this.dataAPI = dataAPI;
                 Subscribe(dataAPI);
+                ballTree = new Dictionary<int, IBall>();
             }
-
-            // Implementacja metod abstrakcyjnych z klasy LogicAPI.
-            public override double getBallPositionX(int ballId)
-            {
-                return this.dataAPI.getBallPositionX(ballId);
-            }
-
-            public override double getBallPositionY(int ballId)
-            {
-                return this.dataAPI.getBallPositionY(ballId);
-            }
-
-            public override int getBallRadius(int ballId)
-            {
-                return this.dataAPI.getBallRadius(ballId);
-            }
-
-            // Dodaje podaną liczbę kulek i rozpoczyna symulację.
             public override void AddBallsAndStart(int BallsAmount)
             {
                 dataAPI.createBalls(BallsAmount);
+                barrier = new Barrier(BallsAmount);
             }
 
             #region observer
 
-            // Subskrybuje do instancji IObservable.
-            public virtual void Subscribe(IObservable<int> provider)
+            public virtual void Subscribe(IObservable<IBall> provider)
             {
                 if (provider != null)
                     unsubscriber = provider.Subscribe(this);
             }
 
-            // Informuje obserwatora o nowym indeksie kuli.
-            public override void OnNext(int value)
+            public override void OnNext(IBall ball)
             {
-                // Wejście do blokady w celu zapobieżenia wyścigom przy dostępie do wspólnych zasobów.
                 Monitor.Enter(_lock);
                 try
                 {
-                    // Utwórz instancję klasy Collision, aby sprawdzić kolizje z innymi piłkami i granicami planszy
-                    Collision collisionControler = new Collision(dataAPI.getBallPositionX(value), dataAPI.getBallPositionY(value), dataAPI.getBallSpeedX(value), dataAPI.getBallSpeedY(value), dataAPI.getBallRadius(value), 10);
-
-                    // Sprawdź kolizje z innymi piłkami
-                    for (int i = 1; i <= dataAPI.getBallsAmount(); i++)
+                    if (!ballTree.ContainsKey(ball.Id))
                     {
-                        if (value != i)
+                        ballTree.Add(ball.Id, ball);
+                    }
+
+                    foreach (var item in ballTree)
+                    {
+                        if (item.Key != ball.Id)
                         {
-                            // Pobierz właściwości innej piłki
-                            double otherBallX = dataAPI.getBallPositionX(i);
-                            double otherBallY = dataAPI.getBallPositionY(i);
-                            double otherBallSpeedX = dataAPI.getBallSpeedX(i);
-                            double otherBallSpeedY = dataAPI.getBallSpeedY(i);
-                            int otherBallRadius = dataAPI.getBallRadius(i);
-                            double otherBallMass = dataAPI.getBallMass(i);
-
-                            // Sprawdź, czy jest kolizja z inną piłką
-                            if (collisionControler.IsCollision(otherBallX + otherBallSpeedX, otherBallY + otherBallSpeedY, otherBallRadius, true))
+                            if (Collision.IsCollision(ball, item.Value))
                             {
-                                // Sprawdź, czy piłki już ze sobą kolidują, aby zapobiec wielokrotnym kolizjom
-                                if (!collisionControler.IsCollision(otherBallX, otherBallY, otherBallRadius, false))
-                                {
-                                    // Jeśli wystąpi kolizja, oblicz nowe prędkości dwóch piłek
-                                    System.Diagnostics.Trace.WriteLine("Piłka " + value + " uderzyła w piłkę " + i);
-
-                                    Vector2[] newVelocity = collisionControler.ImpulseSpeed(otherBallX, otherBallY, otherBallSpeedX, otherBallSpeedY, otherBallMass);
-
-                                    // Ustaw nowe prędkości dwóch piłek
-                                    dataAPI.setBallSpeed(value, newVelocity[0].X, newVelocity[0].Y);
-                                    dataAPI.setBallSpeed(i, newVelocity[1].Y, newVelocity[1].Y);
-                                }
+                                Collision.ImpulseSpeed(ball, item.Value);
                             }
                         }
                     }
 
-                    // Sprawdź kolizje z granicami planszy
-                    int boardSize = dataAPI.getBoardSize();
+                    Collision.IsTouchingBoundaries(ball, dataAPI.getBoardSize());
 
-                    if (collisionControler.IsTouchingBoundariesX(boardSize))
-                    {
-                        // Jeśli piłka zderza się z granicami poziomymi, odwróć jej prędkość poziomą
-                        dataAPI.setBallSpeed(value, -dataAPI.getBallSpeedX(value), dataAPI.getBallSpeedY(value));
-                    }
+                    BallChanged?.Invoke(this, new BallChaneEventArgs() { ball = ball });
 
-                    if (collisionControler.IsTouchingBoundariesY(boardSize))
-                    {
-                        // Jeśli piłka zderza się z granicami pionowymi, odwróć jej prędkość pionową
-                        dataAPI.setBallSpeed(value, dataAPI.getBallSpeedX(value), -dataAPI.getBallSpeedY(value));
-                    }
-                    // Powiadom subskrybentów o zmianie piłki
-                    BallChanged?.Invoke(this, new BallChaneEventArgs() { ballId = value });
                 }
                 catch (SynchronizationLockException exception)
                 {
-                    // Jeśli podczas próby wejścia do blokady wystąpi wyjątek, rzuć nowy wyjątek z dodatkowymi informacjami
-                    throw new Exception("Nie działa blokada synchronizacji sprawdzania kolizji", exception);
+                    throw new Exception("Checking collision synchronization lock not working", exception);
                 }
                 finally
                 {
-                    // Zwolnij blokadę, aby inne wątki mogły uzyskać dostęp do współdzielonych zasobów
                     Monitor.Exit(_lock);
                 }
             }
 
             public override void OnCompleted()
             {
-                // Odsubskrybuj się od obserwowalnej
                 Unsubscribe();
             }
 
             public override void OnError(Exception error)
             {
-                // Rzuć otrzymanym wyjątkiem
                 throw error;
             }
 
             public virtual void Unsubscribe()
             {
-                // Usuń obiekt unsubscribera.
                 unsubscriber.Dispose();
             }
 
             #endregion
 
             #region observable
-
-            public override IDisposable Subscribe(IObserver<int> observer)
+            public override IDisposable Subscribe(IObserver<IBall> observer)
             {
-                // Subskrybuj obserwatora do obserwowalnej zdarzeń.
-                return eventObservable.Subscribe(x => observer.OnNext(x.EventArgs.ballId), ex => observer.OnError(ex), () => observer.OnCompleted());
+                return eventObservable.Subscribe(x => observer.OnNext(x.EventArgs.ball), ex => observer.OnError(ex), () => observer.OnCompleted());
             }
             #endregion
-
 
         }
     }

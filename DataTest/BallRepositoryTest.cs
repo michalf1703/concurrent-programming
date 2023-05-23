@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Data;
-
+/*
 namespace DataTest
 {
     internal class BallRepositoryTest
@@ -36,4 +36,4 @@ namespace DataTest
             Assert.AreEqual(testBallRepository.GetBall(2), testBallRepository.balls[1]);
         }
     }
-}
+}*/

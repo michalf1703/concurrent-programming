@@ -5,8 +5,6 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
-
-using Prism.Mvvm;
 using Model;
 using System.Collections.ObjectModel;
 

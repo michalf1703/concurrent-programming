@@ -1,101 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace Data
 {
-    public class Ball : IObservable<int>
+    internal class Ball : IBall
     {
-        // Unikalny identyfikator kuli.
-        public int Id { get; }
+        public override int Id { get; }
+        private Vector2 _position;
+        public override Vector2 Speed { get; set; }
+        public override Vector2 Position { get { return _position; } set { _position = value; } }
+        public override Vector2 Move { get; set; }
 
-        // Pozycja kuli na osiach X i Y.
-        public double PositionX { get; private set; }
-        public double PositionY { get; private set; }
 
-        // Promień i masa kuli.
-        public int Radius { get; } = 15;
-        public double Mass { get; } = 10;
+        public override int Radius { get; } = 15;
+        public override double Mass { get; } = 10;
 
-        // Ilość o jaką kula się porusza na osiach X i Y.
-        public double MoveX { get; set; }
-        public double MoveY { get; set; }
+        public bool isRunning = true;
 
-        // Kolekcja obserwatorów, którzy zasubskrybowali ruchy tej kuli.
-        internal readonly IList<IObserver<int>> observers;
+        public int counter { get; set; } = 1;
 
-        // Task, który uruchamia logikę ruchu kuli.
+
+        internal readonly IList<IObserver<IBall>> observers;
+        Stopwatch stopwatch;
         private Task BallThread;
 
-        // Konstruktor dla kuli.
-        public Ball(int id)
+
+       public Ball(int id)
         {
             this.Id = id;
 
-            // Ustaw losową pozycję startową i kierunek ruchu.
             Random random = new Random();
-            this.PositionX = Convert.ToDouble(random.Next(1, 500));
-            this.PositionY = Convert.ToDouble(random.Next(1, 500));
-            this.MoveX = random.NextDouble() * (3 - 2) + 2;
-            this.MoveY = random.NextDouble() * (3 - 2) + 2;
+            stopwatch = new Stopwatch();
+            observers = new List<IObserver<IBall>>();
 
-            // Zainicjuj kolekcję obserwatorów.
-            observers = new List<IObserver<int>>();
+            this.Position = new Vector2(random.Next(1, 500), random.Next(1, 500));
+            this.Speed = new Vector2((float)(random.NextDouble() * (0.2 - 0) + 0), (float)(random.NextDouble() * (0.2 - 0) + 0));
+
         }
 
-        // Rozpocznij logikę ruchu kuli na osobnym wątku.
+
         public void StartMoving()
         {
             this.BallThread = new Task(MoveBall);
             BallThread.Start();
         }
 
-        // Logika przesuwania kuli.
-        public async void MoveBall()
+        public void MoveBall()
         {
-            while (true)
+            while (isRunning)
             {
-                // Zaktualizuj pozycję kuli i powiadom wszystkich obserwatorów.
-                ChangeBallPosition();
+                long time = stopwatch.ElapsedMilliseconds;
+                counter++;
+                stopwatch.Restart();
+                stopwatch.Start();
+
+                ChangeBallPosition(time);
+                if (counter % 100 == 0)
+                {
+                    counter = 1;
+                }
+
                 foreach (var observer in observers.ToList())
                 {
                     if (observer != null)
                     {
-                        observer.OnNext(Id);
+                        observer.OnNext(this);
                     }
                 }
-
-                // Poczekaj na krótką chwilę, aby spowolnić ruch kuli.
-                System.Threading.Thread.Sleep(1);
+                stopwatch.Stop();
             }
         }
 
-        // Zaktualizuj pozycję kuli na podstawie jej aktualnego kierunku ruchu.
-        public void ChangeBallPosition()
+        public void ChangeBallPosition(long time)
         {
-            PositionX += MoveX;
-            PositionY += MoveY;
+            Vector2 move;
+            if (time > 0)
+            {
+                move = Speed / 20 * time;
+            }
+            else
+            {
+                move = Speed / 20;
+            }
+
+            _position += move;
         }
+
 
         #region provider
 
-        // Zasubskrybuj obserwatora na ruchy tej kuli.
-        public IDisposable Subscribe(IObserver<int> observer)
+        public override IDisposable Subscribe(IObserver<IBall> observer)
         {
             if (!observers.Contains(observer))
                 observers.Add(observer);
             return new Unsubscriber(observers, observer);
         }
 
-        // Klasa, która anuluje subskrypcję obserwatora na ruchy tej piłki.
         private class Unsubscriber : IDisposable
         {
-            private IList<IObserver<int>> _observers;
-            private IObserver<int> _observer;
+            private IList<IObserver<IBall>> _observers;
+            private IObserver<IBall> _observer;
 
-            public Unsubscriber(IList<IObserver<int>> observers, IObserver<int> observer)
+            public Unsubscriber
+            (IList<IObserver<IBall>> observers, IObserver<IBall> observer)
             {
                 _observers = observers;
                 _observer = observer;
