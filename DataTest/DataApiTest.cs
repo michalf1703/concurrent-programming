@@ -1,7 +1,11 @@
 using NUnit.Framework;
 using Data;
 
+<<<<<<< HEAD
 /*
+=======
+
+>>>>>>> e8c05e708da31de2c78c6dfc57c29ac077428f35
 namespace DataTest
 {
     internal class DataApiTest
