@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
+using System.Threading;
 
 namespace Data
 {
@@ -26,6 +27,7 @@ namespace Data
 
         public override Vector2 Speed { get; set; }
         public override Vector2 Move { get; set; }
+        private object _lock = new object();
 
         internal readonly IList<IObserver<IBall>> observers;
         Stopwatch stopwatch;
@@ -53,7 +55,7 @@ namespace Data
             BallThread.Start();
         }
 
-        public void MoveBall()
+        public async void MoveBall()
         {
             while (isRunning)
             {
@@ -61,8 +63,17 @@ namespace Data
                 counter++;
                 stopwatch.Restart();
                 stopwatch.Start();
+                Monitor.Enter(_lock);
+                try { ChangeBallPosition(time); }
+                catch (SynchronizationLockException exception)
+                {
+                    throw new Exception("Synchronization lock not working", exception);
+                }
+                finally
+                {
+                    Monitor.Exit(_lock);
+                }
 
-                ChangeBallPosition(time);
                 if (counter % 100 == 0)
                 {
                     counter = 1;
@@ -85,11 +96,11 @@ namespace Data
 
             if (time > 0)
             {
-                Move += Speed / 12 * time;
+                Move += Speed / 2 * time;
             }
             else
             {
-                Move = Speed / 12;
+                Move = Speed / 2;
 
             }
 

@@ -18,40 +18,14 @@ namespace LogicTest
                 // Do nothing
             }
 
-            public override double getBallMass(int ballId)
-            {
-                return 1.0;
-            }
-
-            public override double getBallPositionX(int ballId)
-            {
-                return 0.0;
-            }
-
-            public override double getBallPositionY(int ballId)
-            {
-                return 0.0;
-            }
-
-            public override int getBallRadius(int ballId)
-            {
-                return 15;
-            }
+         
 
             public override int getBallsAmount()
             {
                 return 0;
             }
 
-            public override double getBallSpeedX(int ballId)
-            {
-                return 0.0;
-            }
 
-            public override double getBallSpeedY(int ballId)
-            {
-                return 0.0;
-            }
 
             public override int getBoardSize()
             {
@@ -68,20 +42,17 @@ namespace LogicTest
                 // Do nothing
             }
 
-            public override void OnNext(int value)
+
+            public override void OnNext(IBall Ball)
             {
-                // Do nothing
+                throw new NotImplementedException();
             }
 
-            public override void setBallSpeed(int ballId, double speedX, double speedY)
-            {
-                // Do nothing
-            }
 
-            public override IDisposable Subscribe(IObserver<int> observer)
+
+            public override IDisposable Subscribe(IObserver<IBall> observer)
             {
-                // Do nothing
-                return null;
+                throw new NotImplementedException();
             }
         }
 
@@ -98,6 +69,7 @@ namespace LogicTest
         public void getBallRadiusTest()
         {
             testLogicAPI.AddBallsAndStart(1);
+            testLogicAPI.
             Assert.AreEqual(testLogicAPI.getBallRadius(1), 15);
         }
     }

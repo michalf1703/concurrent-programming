@@ -10,11 +10,11 @@ namespace DataTest
 {
     internal class BallRepositoryTest
     {
-        private BallRepository testBallRepository;
+        private BallRepositoryTest testBallRepository;
         [SetUp]
         public void Setup()
         {
-            testBallRepository = new BallRepository();
+            testBallRepository = new BallRepositoryTest();
         }
 
         [Test]
@@ -27,6 +27,11 @@ namespace DataTest
             Assert.AreEqual(testBallRepository.balls[1].Id, 2);
         }
 
+        private void CreateBalls(int v)
+        {
+            throw new NotImplementedException();
+        }
+
         [Test]
         public void getBallTest()
         {
@@ -36,4 +41,5 @@ namespace DataTest
             Assert.AreEqual(testBallRepository.GetBall(2), testBallRepository.balls[1]);
         }
     }
-}*/
+}
+*/

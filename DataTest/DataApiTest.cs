@@ -1,10 +1,7 @@
 using NUnit.Framework;
 using Data;
 
-/*
-=======
 
->>>>>>> e8c05e708da31de2c78c6dfc57c29ac077428f35
 namespace DataTest
 {
     internal class DataApiTest
@@ -25,15 +22,15 @@ namespace DataTest
             Assert.AreEqual(testDataApi.getBallsAmount(), 2);
         }
 
-        [Test]
+     /*   [Test]
         public void ballsSpeedTest()
-        {
+       {
             testDataApi.createBalls(1);
 
-            testDataApi.setBallSpeed(1, 2, 2);
+            testDataApi.
 
             Assert.AreEqual(testDataApi.getBallSpeedX(1), 2);
             Assert.AreEqual(testDataApi.getBallSpeedY(1), 2);
-        }
+        }*/
     }
-}*/
+}

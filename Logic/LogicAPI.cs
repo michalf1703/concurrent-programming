@@ -24,6 +24,7 @@ namespace Logic
             return new BusinessLogic(data == null ? DataAbstractAPI.CreateDataApi() : data);
         }
 
+
         public class BallChaneEventArgs : EventArgs
         {
             public IBall ball { get; set; }

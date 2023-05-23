@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace Logic
 {
-    public class Collision
+    internal class Collision
     {
         public static bool IsCollision(IBall current, IBall other)
         {
