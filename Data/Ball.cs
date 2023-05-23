@@ -12,13 +12,10 @@ namespace Data
     {
         public override int Id { get; }
         private Vector2 _position;
-        public override double PositionX { get; set; }
-        public override double PositionY { get; set; }
-        public override double SpeedX { get; set; }
-        public override double SpeedY { get; set; }
-
-        public override double MoveX { get; set; }
-        public override double MoveY { get; set; }
+        public override Vector2 Position
+        {
+            get => _position;
+        }
 
         public override int Radius { get; } = 15;
         public override double Mass { get; } = 10;
@@ -27,6 +24,8 @@ namespace Data
 
         public int counter { get; set; } = 1;
 
+        public override Vector2 Speed { get; set; }
+        public override Vector2 Move { get; set; }
 
         internal readonly IList<IObserver<IBall>> observers;
         Stopwatch stopwatch;
@@ -36,16 +35,15 @@ namespace Data
        public Ball(int id)
         {
             this.Id = id;
-
             Random random = new Random();
             stopwatch = new Stopwatch();
             observers = new List<IObserver<IBall>>();
+            this._position = new Vector2(random.Next(1, 500), random.Next(1, 500));
+            this.Speed = new Vector2(
+                (float)(random.NextDouble() * (0.2 - 0) + 0),
+                (float)(random.NextDouble() * (0.2 - 0) + 0)
+            );
 
-            this.PositionX = Convert.ToDouble(random.Next(1, 500));
-            this.PositionY = Convert.ToDouble(random.Next(1, 500));
-
-            this.SpeedX = random.NextDouble() * (0.2 - 0) + 0;
-            this.SpeedY = random.NextDouble() * (0.2 - 0) + 0;
         }
 
 
@@ -81,22 +79,21 @@ namespace Data
             }
         }
 
+
         public void ChangeBallPosition(long time)
         {
 
             if (time > 0)
             {
-                MoveX = SpeedX / 5 * time;
-                MoveY = SpeedY / 5 * time;
+                Move += Speed / 12 * time;
             }
             else
             {
-                MoveX = SpeedX / 5;
-                MoveY = SpeedY / 5;
+                Move = Speed / 12;
+
             }
 
-            PositionX += MoveX;
-            PositionY += MoveY;
+            _position += Move;
         }
 
 

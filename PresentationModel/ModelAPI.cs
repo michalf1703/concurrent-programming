@@ -45,7 +45,7 @@ namespace Model
             public ModelBall()
             {
                 logicApi = logicApi ?? LogicAPI.CreateLayer();
-                IDisposable observer = logicApi.Subscribe(x => Balls[x.Id - 1].Move(x.PositionX, x.PositionY));
+                IDisposable observer = logicApi.Subscribe(x => Balls[x.Id - 1].Move(x.Position));
                 eventObservable = Observable.FromEventPattern<BallChaneEventArgs>(this, "BallChanged");
             }
 

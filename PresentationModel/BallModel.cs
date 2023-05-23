@@ -63,9 +63,11 @@ namespace Model
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal object Move(Vector2 position)
+        public void Move(Vector2 position)
         {
-            throw new NotImplementedException();
+            Left = position.X;
+            Top = position.Y;
         }
+
     }
 }
