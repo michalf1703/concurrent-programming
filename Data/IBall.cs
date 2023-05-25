@@ -13,10 +13,8 @@ namespace Data
         public abstract int Id { get; }
         public abstract Vector2 Position { get; }
         public abstract Vector2 Speed { get; set; }
-        public abstract Vector2 Move { get; set; }
         public abstract int Radius { get; }
         public abstract double Mass { get; }
-        //public 
         public abstract IDisposable Subscribe(IObserver<IBall> observer);
 
     }
