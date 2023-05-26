@@ -21,10 +21,7 @@ namespace Data
             get => _position;
         }
         public override Vector2 Speed { get; set; }
-
-
         private static object _lock = new object();         // Tworzymy statyczny obiekt lock, który będzie współdzielony przez wszystkie instancje tej klasy
-
         internal readonly IList<IObserver<IBall>> observers;
         Stopwatch stopwatch;
         private Task BallThread;
@@ -51,22 +48,8 @@ namespace Data
                 long time = stopwatch.ElapsedMilliseconds; //czy czas powinien znajdować się w sekcji krytycznej?
                 stopwatch.Restart();
                 stopwatch.Start();
-
-                Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
-                try
-                {
-                    ChangeBallPosition(time);
-                }
-                catch (SynchronizationLockException exception)
-                {
-                    throw new Exception("Synchronization lock not working", exception);
-                }
-                finally
-                {
-                    Monitor.Exit(_lock);  // Zwolniamy blokadę
-                }
-
-                stopwatch.Stop(); //skoro to pętla nieskończona to stoper chyba nigdy sie nie zatrzyma? czy .Stop() jest potrzebne?
+                ChangeBallPosition(time);
+                stopwatch.Stop(); 
             }
         }
 
@@ -85,7 +68,20 @@ namespace Data
                 Move = Speed;
             }
 
-            _position += Move;
+            Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
+            try
+            {
+                _position += Move;
+            }
+            catch (SynchronizationLockException exception)
+            {
+                throw new Exception("Synchronization lock not working", exception);
+            }
+            finally
+            {
+                Monitor.Exit(_lock);  // Zwolniamy blokadę
+            }
+            
             foreach (var observer in observers.ToList())
             {
                 if (observer != null)
