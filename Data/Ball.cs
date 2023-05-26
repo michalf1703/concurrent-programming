@@ -22,7 +22,6 @@ namespace Data
         }
         public override Vector2 Speed { get; set; }
 
-        private Vector2 Move { get; set; }
 
         private static object _lock = new object();         // Tworzymy statyczny obiekt lock, który będzie współdzielony przez wszystkie instancje tej klasy
 
@@ -48,13 +47,14 @@ namespace Data
         private async void MoveBall()
         {
             while (isRunning)
-            { 
+            {
+                long time = stopwatch.ElapsedMilliseconds; //czy czas powinien znajdować się w sekcji krytycznej?
+                stopwatch.Restart();
+                stopwatch.Start();
+
                 Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
                 try
                 {
-                    long time = stopwatch.ElapsedMilliseconds; //czy czas powinien znajdować się w sekcji krytycznej?
-                    stopwatch.Restart();
-                    stopwatch.Start();
                     ChangeBallPosition(time);
                 }
                 catch (SynchronizationLockException exception)
@@ -66,13 +66,6 @@ namespace Data
                     Monitor.Exit(_lock);  // Zwolniamy blokadę
                 }
 
-                foreach (var observer in observers.ToList())
-                {
-                    if (observer != null)
-                    {
-                        observer.OnNext(this);
-                    }
-                }
                 stopwatch.Stop(); //skoro to pętla nieskończona to stoper chyba nigdy sie nie zatrzyma? czy .Stop() jest potrzebne?
             }
         }
@@ -80,9 +73,11 @@ namespace Data
 
         private void ChangeBallPosition(long time)
         {
+            Vector2 Move = default;
             // Obliczamy nową pozycję piłki na podstawie jej prędkości i upływu czasu
             if (time > 0)
             {
+                
                 Move += Speed * time;
             }
             else
@@ -91,6 +86,13 @@ namespace Data
             }
 
             _position += Move;
+            foreach (var observer in observers.ToList())
+            {
+                if (observer != null)
+                {
+                    observer.OnNext(this);
+                }
+            }
         }
 
         #region provider
