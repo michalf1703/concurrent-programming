@@ -42,7 +42,6 @@ namespace Logic
             Vector2 currentVelocity = current.Speed;                     // Pobiera prędkość bieżącej piłki
             Vector2 currentPosition = current.Position;                 // Pobiera pozycję bieżącej piłki
             float currentMass = (float)current.Mass;                     // Pobiera masę bieżącej piłki
-
             Vector2 otherVelocity = other.Speed;                         // Pobiera prędkość innej piłki
             Vector2 otherPosition = other.Position;                     // Pobiera pozycję innej piłki
             float otherMass = (float)other.Mass;                         // Pobiera masę innej piłki

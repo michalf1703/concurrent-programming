@@ -56,9 +56,15 @@ namespace Data
 
         private void ChangeBallPosition(long time)
         {
+           
             Vector2 Move = default;
-            // Obliczamy nową pozycję piłki na podstawie jej prędkości i upływu czasu
-            if (time > 0)
+
+
+            Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
+            try
+            {
+                // Obliczamy nową pozycję piłki na podstawie jej prędkości i upływu czasu
+                if (time > 0)
             {
                 
                 Move += Speed * time;
@@ -68,9 +74,6 @@ namespace Data
                 Move = Speed;
             }
 
-            Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
-            try
-            {
                 _position += Move;
             }
             catch (SynchronizationLockException exception)
@@ -127,6 +130,10 @@ namespace Data
                 (float)(random.NextDouble() * (0.2 - 0) + 0),
                 (float)(random.NextDouble() * (0.2 - 0) + 0)
             );
+        }
+        public override object getLock()
+        {
+            return _lock; 
         }
 
         #endregion

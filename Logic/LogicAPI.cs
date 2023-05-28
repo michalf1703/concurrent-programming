@@ -12,8 +12,6 @@ namespace Logic
 {
     public abstract class LogicAPI : IObserver<IBall>, IObservable<IBall>
     {
-        // Dodaj komentarze w języku polskim do przestrzeni nazw i używanych bibliotek
-        // ...
 
         public abstract void AddBallsAndStart(int BallsAmount);
         public abstract IDisposable Subscribe(IObserver<IBall> observer);
@@ -38,7 +36,7 @@ namespace Logic
         {
             private readonly DataAbstractAPI dataAPI;
             private IDisposable unsubscriber;
-            static object _lock = new object();
+            
             private IObservable<EventPattern<BallChaneEventArgs>> eventObservable = null;
             public event EventHandler<BallChaneEventArgs> BallChanged;
             Dictionary<int, IBall> ballTree;
@@ -72,7 +70,8 @@ namespace Logic
             // Obsługa zdarzenia OnNext
             public override void OnNext(IBall ball)
             {
-                Monitor.Enter(_lock);   // Wchodzimy w sekcję monitorowaną za pomocą obiektu _lock
+                
+                Monitor.Enter(ball.getLock());   // Wchodzimy w sekcję monitorowaną za pomocą obiektu _lock
                 try
                 {
                     if (!ballTree.ContainsKey(ball.Id))    // Jeśli piłka o danym Id nie istnieje w ballTree, dodaj ją
@@ -102,7 +101,7 @@ namespace Logic
                 }
                 finally
                 {
-                    Monitor.Exit(_lock);    // Opuszczamy sekcję monitorowaną
+                    Monitor.Exit(ball.getLock());    // Opuszczamy sekcję monitorowaną
                 }
             }
 

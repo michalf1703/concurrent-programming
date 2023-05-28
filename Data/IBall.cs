@@ -15,6 +15,7 @@ namespace Data
         public abstract Vector2 Speed { get; set; }
         public abstract int Radius { get; }
         public abstract double Mass { get; }
+        public abstract object getLock();
         public abstract IDisposable Subscribe(IObserver<IBall> observer);
 
     }
