@@ -17,8 +17,8 @@ namespace DataTest
 
             DataAbstractAPI DataAPI = DataAbstractAPI.CreateDataApi();
             DataAPI.createBalls(number);
-           
-            Assert.AreNotEqual(DataAPI.getBallsAmount, 5);
+            Assert.AreEqual(DataAPI.getBallsAmount(), 5);
+
         }
 
 
@@ -29,6 +29,14 @@ namespace DataTest
             DataAbstractAPI DataAPI = DataAbstractAPI.CreateDataApi();
             DataAPI.getBoardSize();
             Assert.AreEqual(DataAPI.getBoardSize(), 515);
+        }
+
+        [Test]
+        public void GetBall() {
+            DataAbstractAPI DataAPI = DataAbstractAPI.CreateDataApi();
+            DataAPI.createBalls(5);
+            Assert.AreEqual(DataAPI.getBallsAmount(), 5);
+
         }
     }
 }
