@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Logic;
 using Data;
-/*
+
 namespace LogicTest
 {
     public class LogicAPITest
@@ -18,7 +18,7 @@ namespace LogicTest
                 // Do nothing
             }
 
-         
+
 
             public override int getBallsAmount()
             {
@@ -45,14 +45,14 @@ namespace LogicTest
 
             public override void OnNext(IBall Ball)
             {
-                throw new NotImplementedException();
+
             }
 
 
 
             public override IDisposable Subscribe(IObserver<IBall> observer)
             {
-                throw new NotImplementedException();
+                return null;
             }
         }
 
@@ -64,13 +64,14 @@ namespace LogicTest
             FalseDataApi falseDataApi = new FalseDataApi();
             testLogicAPI = LogicAPI.CreateLayer(falseDataApi);
         }
-
         [Test]
-        public void getBallRadiusTest()
+        public void getBoardSizeTest()
         {
-            testLogicAPI.AddBallsAndStart(1);
-            testLogicAPI.
-            Assert.AreEqual(testLogicAPI.getBallRadius(1), 15);
+
+            int boardSize = testLogicAPI.getBoardSize();
+            Assert.AreEqual(515, boardSize);
         }
+
+
     }
-}*/
+}

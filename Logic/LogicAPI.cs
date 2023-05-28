@@ -30,6 +30,10 @@ namespace Logic
         {
             public IBall ball { get; set; }
         }
+        public int getBoardSize()
+        {
+            return 515;
+        }
 
         // Klasa BusinessLogic dziedzicząca po LogicAPI i implementująca IObservable<IBall>
         private class BusinessLogic : LogicAPI, IObservable<IBall>
