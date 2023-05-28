@@ -59,8 +59,8 @@ namespace LogicTest
         [Test]
         public void IsTouchingBoundariesXandYTest()
         {
-            double speedX = testBall.SpeedX;
-            double speedY = testBall.SpeedY;
+            double moveX = testBall.MoveX;
+            double moveY = testBall.SpeedY;
 
             Collision.IsTouchingBoundaries(testBall, 100);
 
