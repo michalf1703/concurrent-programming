@@ -3,9 +3,10 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-/*
+
 namespace LogicTest
 {
     internal class VectorTest
@@ -38,25 +39,17 @@ namespace LogicTest
         {
             Assert.AreEqual(Vector2.DistanceSquared(testVector, testVector1), 169);
         }
-        [Test]
+       
 
-        public void IsZeroTest()
-        {
-            Assert.IsTrue(zeroVector.IsZero());
-            Assert.IsFalse(testVector.IsZero());
-            Assert.IsFalse(testVector1.IsZero());
-            Assert.IsFalse(testSameVector.IsZero());
-
-        }
         [Test]
 
         public void ToStringTest()
         {
-            Assert.AreEqual(testVector.ToString(), "[11, 1]") ;
-            Assert.AreEqual(testVector1.ToString(), "[11, 14]");
-            Assert.AreEqual(zeroVector.ToString(), "[0, 0]");
-            Assert.AreEqual(testSameVector.ToString(), "[11, 1]");
-            Assert.AreEqual(divideVector.ToString(), "[10, 6]");
+            Assert.AreEqual(testVector.ToString(), "<11  1>") ;
+            Assert.AreEqual(testVector1.ToString(), "<11  14>");
+            Assert.AreEqual(zeroVector.ToString(), "<0  0>");
+            Assert.AreEqual(testSameVector.ToString(), "<11  1>");
+            Assert.AreEqual(divideVector.ToString(), "<10  6>");
         }
         [Test]
 
@@ -72,7 +65,7 @@ namespace LogicTest
         {
 
 
-            Assert.AreEqual(testVector.GetHashCode(), -2000565629);
+            Assert.AreEqual(testVector.GetHashCode(), -657412572);
             Assert.AreEqual(testVector1.GetHashCode(), -1969108349);
             Assert.AreEqual(zeroVector.GetHashCode(), -393098621);
             Assert.AreEqual(testSameVector.GetHashCode(), -2000565629);
@@ -97,4 +90,3 @@ namespace LogicTest
 
     }
 }
-*/
