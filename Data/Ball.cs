@@ -16,6 +16,8 @@ namespace Data
 
         private bool isRunning = true;
         private Vector2 _position;
+        private int counter { get; set; } = 1;
+        internal DAO dao { get; set; }
         public override Vector2 Position
         {
             get => _position;
@@ -49,6 +51,11 @@ namespace Data
                 stopwatch.Restart();
                 stopwatch.Start();
                 ChangeBallPosition(time);
+                if (counter % 100 == 0)
+                {
+                    dao.addToBuffer(this);
+                    counter = 1;
+                }
                 stopwatch.Stop(); 
             }
         }
@@ -56,9 +63,8 @@ namespace Data
 
         private void ChangeBallPosition(long time)
         {
-           
+       
             Vector2 Move = default;
-
 
             Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
             try
@@ -66,12 +72,12 @@ namespace Data
                 // Obliczamy nową pozycję piłki na podstawie jej prędkości i upływu czasu
                 if (time > 0)
             {
-                
-                Move += Speed * time;
+
+                    Move += Speed * time / 10;
             }
             else
             {
-                Move = Speed;
+                Move = Speed/10;
             }
 
                 _position += Move;
