@@ -10,10 +10,11 @@ namespace Data
     {
         public List<Ball> balls { get; set; } // Lista wszystkich piłek utworzonych w repozytorium
         public int BoardSize { get; private set; } = 515; // Rozmiar planszy gry, który jest stały i wynosi 515
-
+        DAO dao;
         public BallRepository()
         {
             balls = new List<Ball>(); // Inicjalizacja listy piłek
+            dao = new DAO();
         }
 
         // Tworzy określoną liczbę piłek i dodaje je do listy
@@ -21,7 +22,9 @@ namespace Data
         {
             for (int i = 0; i < ballsAmount; i++)
             {
-                balls.Add(new Ball(i + 1));
+                Ball newBall = new Ball(i + 1);
+                balls.Add(newBall);
+                newBall.dao = dao;
             }
         }
 

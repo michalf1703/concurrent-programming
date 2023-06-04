@@ -48,20 +48,8 @@ namespace Model
             }
         }
 
-        // Metoda Move1 do aktualizacji pozycji piłki na podstawie wektora pozycji
-        public void Move1(Vector2 position)
-        {
-            // Zaktualizuj pozycję piłki
-            Left = position.X;
-            Top = position.Y;
-        }
+ 
 
-        // Metoda Move do aktualizacji pozycji piłki na podstawie współrzędnych x i y
-        public void Move(double poitionX, double positionY)
-        {
-            Left = poitionX;
-            Top = positionY;
-        }
 
         // Metoda RaisePropertyChanged do wywołania zdarzenia Property Change Notification
         private void RaisePropertyChanged([CallerMemberName] string propertyName = "")

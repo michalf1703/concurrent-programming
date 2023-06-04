@@ -16,8 +16,12 @@ namespace Data
 
         private bool isRunning = true;
         private Vector2 _position;
+
+
         private int counter { get; set; } = 1;
-        internal DAO dao { get; set; }
+
+
+
         public override Vector2 Position
         {
             get => _position;
@@ -29,11 +33,13 @@ namespace Data
         private Task BallThread;
 
 
+        internal DAO dao { get; set; }
         internal Ball(int id)
         {
             this.Id = id;
             stopwatch = new Stopwatch();
             observers = new List<IObserver<IBall>>();
+
             createAndStart();  // Tworzymy i uruchamiamy piłkę
         }
 
@@ -48,14 +54,10 @@ namespace Data
             while (isRunning)
             {
                 long time = stopwatch.ElapsedMilliseconds; //czy czas powinien znajdować się w sekcji krytycznej?
+                counter++;
                 stopwatch.Restart();
                 stopwatch.Start();
                 ChangeBallPosition(time);
-                if (counter % 100 == 0)
-                {
-                    dao.addToBuffer(this);
-                    counter = 1;
-                }
                 stopwatch.Stop(); 
             }
         }
@@ -81,6 +83,12 @@ namespace Data
             }
 
                 _position += Move;
+                if (counter % 100 == 0)
+                {
+                    dao.addToBuffer(this);
+                    counter = 1;
+                }
+
             }
             catch (SynchronizationLockException exception)
             {
@@ -90,7 +98,8 @@ namespace Data
             {
                 Monitor.Exit(_lock);  // Zwolniamy blokadę
             }
-            
+
+
             foreach (var observer in observers.ToList())
             {
                 if (observer != null)
@@ -98,6 +107,7 @@ namespace Data
                     observer.OnNext(this);
                 }
             }
+
         }
 
         #region provider
