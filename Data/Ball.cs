@@ -13,19 +13,14 @@ namespace Data
         public override int Id { get; }
         public override int Radius { get; } = 15;
         public override double Mass { get; } = 10;
-
         private bool isRunning = true;
         private Vector2 _position;
-
-
         private int counter { get; set; } = 1;
-
-
-
         public override Vector2 Position
         {
             get => _position;
         }
+        internal int board_size { get;} = 515;
         public override Vector2 Speed { get; set; }
         private static object _lock = new object();         // Tworzymy statyczny obiekt lock, który będzie współdzielony przez wszystkie instancje tej klasy
         internal readonly IList<IObserver<IBall>> observers;
@@ -45,6 +40,7 @@ namespace Data
 
         public void StartMoving()
         {
+            
             this.BallThread = new Task(MoveBall);  // Tworzymy nowe zadanie do poruszania piłką
             BallThread.Start();  // Uruchamiamy zadanie
         }
@@ -58,6 +54,13 @@ namespace Data
                 stopwatch.Restart();
                 stopwatch.Start();
                 ChangeBallPosition(time);
+             /*   Vector2 tempSpeed = Speed;
+                int sleepTime = (int)(1 / Math.Abs(tempSpeed.X) + Math.Abs(tempSpeed.Y)/10000);
+                if (sleepTime < 10)
+                {
+                    sleepTime = 10;
+                }
+                await Task.Delay(sleepTime);*/
                 stopwatch.Stop(); 
             }
         }
@@ -75,11 +78,11 @@ namespace Data
                 if (time > 0)
             {
 
-                    Move += Speed * time / 10;
+                    Move += Speed * time;
             }
             else
             {
-                Move = Speed/10;
+                Move = Speed;
             }
 
                 _position += Move;

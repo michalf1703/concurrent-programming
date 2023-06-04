@@ -15,6 +15,7 @@ namespace Data
         private BlockingCollection<String> buffer = new BlockingCollection<String>();
         private Task fileWritter;
         private StreamWriter sw;
+        private bool boardSizeAdded = false;
 
         public DAO()
         {
@@ -24,6 +25,12 @@ namespace Data
 
         public void addToBuffer(Ball ball)
         {
+            if (boardSizeAdded == false) { 
+            string board = "Boardz Size: " + ball.board_size + "x" + ball.board_size;
+            buffer.Add(board);
+                boardSizeAdded = true;
+            }
+
             string time = DateTime.Now.ToString("h:mm:ss tt");
             string log = time + " Ball "
                         + ball.Id
@@ -32,7 +39,7 @@ namespace Data
                         + FormatVector(ball.Position)
                         + " Speed: "
                         + FormatVector(ball.Speed);
-
+            
             buffer.Add(log);
         }
 
@@ -41,6 +48,10 @@ namespace Data
             return "X: " + Math.Round(vector.X, 4) + " Y: " + Math.Round(vector.Y, 4);
         }
 
+        internal void addSizeBoardToBuffer(Ball ball) {
+            string board = "Boardz Size: " + ball.board_size + "x" + ball.board_size;
+            buffer.Add(board);
+        }
 
         public void Dispose()
         {
@@ -50,20 +61,7 @@ namespace Data
         }
         public void writter()
         {
-            sw = null;
-            while (sw == null)
-            {
-                try
-                {
-                    sw = new StreamWriter("../../../../Data/log.txt", append: false);
-                }
-                catch (IOException)
-                {
-                    // Plik jest używany przez inny proces, oczekiwanie przed ponownym otwarciem
-                    Thread.Sleep(1000);
-                }
-            }
-
+            sw = new StreamWriter("../../../../Data/log.txt", append: false);
             try
             {
                 foreach (string i in buffer.GetConsumingEnumerable())
