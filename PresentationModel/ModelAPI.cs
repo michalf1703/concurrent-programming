@@ -65,7 +65,7 @@ namespace Model
                 for (int i = 1; i <= ballsAmount; i++)
                 {
                     // Tworzenie nowej piłki w modelu
-                    BallInModel newBall = new BallInModel(0, 0, 15);
+                    BallInModel newBall = new BallInModel(0, 0, 10);
                     Balls.Add(newBall);
 
                     // Wywołanie zdarzenia BallChanged i przekazanie nowej piłki jako argument

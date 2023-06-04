@@ -21,20 +21,28 @@ namespace Logic
         }
 
         // Sprawdza, czy piłka dotyka granic planszy i odwraca jej prędkość w odpowiednim kierunku
-        public static void IsTouchingBoundaries(IBall ball, int boardSize)
+public static void IsTouchingBoundaries(IBall ball, int boardSize)
+{
+    Vector2 newPosition = ball.Position;
+    Vector2 speed = ball.Speed;
+
+    if ((newPosition.X > boardSize && speed.X > 0) || (newPosition.X < 0 && speed.X < 0))
+    {
+        if (Math.Sign(speed.X) != Math.Sign(boardSize - newPosition.X))
         {
-            Vector2 newPosition = ball.Position;
-
-            if ((newPosition.X > boardSize && ball.Position.X > 0) || (newPosition.X < 0 && ball.Position.X < 0))
-            {
-                ball.Speed *= new Vector2(-1, 1);                       // Odwraca prędkość piłki w osi X
-            }
-
-            if ((newPosition.Y > boardSize && ball.Position.Y > 0) || (newPosition.Y < 0 && ball.Position.Y < 0))
-            {
-                ball.Speed *= new Vector2(1, -1);                       // Odwraca prędkość piłki w osi Y
-            }
+            ball.Speed *= new Vector2(-1, 1); // Odwraca prędkość piłki w osi X
         }
+    }
+
+    if ((newPosition.Y > boardSize && speed.Y > 0) || (newPosition.Y < 0 && speed.Y < 0))
+    {
+        if (Math.Sign(speed.Y) != Math.Sign(boardSize - newPosition.Y))
+        {
+            ball.Speed *= new Vector2(1, -1); // Odwraca prędkość piłki w osi Y
+        }
+    }
+}
+
 
         // Wykonuje impulsowe zmiany prędkości dwóch piłek po kolizji
         public static void ImpulseSpeed(IBall current, IBall other)

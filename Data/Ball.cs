@@ -11,23 +11,21 @@ namespace Data
     internal class Ball : IBall
     {
         public override int Id { get; }
-        public override int Radius { get; } = 15;
+        public override int Radius { get; } = 10;
         public override double Mass { get; } = 10;
         private bool isRunning = true;
         private Vector2 _position;
-        private int counter { get; set; } = 1;
         public override Vector2 Position
         {
             get => _position;
         }
+
         internal int board_size { get;} = 515;
         public override Vector2 Speed { get; set; }
         private static object _lock = new object();         // Tworzymy statyczny obiekt lock, który będzie współdzielony przez wszystkie instancje tej klasy
         internal readonly IList<IObserver<IBall>> observers;
         Stopwatch stopwatch;
         private Task BallThread;
-
-
         internal DAO dao { get; set; }
         internal Ball(int id)
         {
@@ -49,48 +47,43 @@ namespace Data
         {
             while (isRunning)
             {
-                long time = stopwatch.ElapsedMilliseconds; //czy czas powinien znajdować się w sekcji krytycznej?
-                counter++;
+                long time = stopwatch.ElapsedMilliseconds;
+
+                // Zresetowanie i rozpoczęcie odliczania stopera
                 stopwatch.Restart();
                 stopwatch.Start();
+
+                // Zmiana pozycji piłki na podstawie upływu czasu
                 ChangeBallPosition(time);
-             /*   Vector2 tempSpeed = Speed;
-                int sleepTime = (int)(1 / Math.Abs(tempSpeed.X) + Math.Abs(tempSpeed.Y)/10000);
-                if (sleepTime < 10)
-                {
-                    sleepTime = 10;
-                }
-                await Task.Delay(sleepTime);*/
-                stopwatch.Stop(); 
+
+                // Dodanie informacji o piłce do bufora
+                dao.addToBuffer(this);
+
+                // Pobranie prędkości piłki
+                Vector2 _speed = Speed;
+
+                // Obliczenie czasu oczekiwania w oparciu o prędkość piłki
+                int sleepTime = (int)(1 / Math.Sqrt(Math.Pow(_speed.X, 2) + Math.Pow(_speed.Y, 2)));
+
+                // Oczekiwanie asynchroniczne na określony czas
+                await Task.Delay(sleepTime);
+
+                // Zatrzymanie stopera
+                stopwatch.Stop();
             }
         }
-
 
         private void ChangeBallPosition(long time)
         {
        
             Vector2 Move = default;
-
             Monitor.Enter(_lock);  // Zajmujemy blokadę, aby zapewnić wyłączny dostęp do współdzielonych zasobów, jeśli monitor jest zajęty to blokuje wątek
             try
             {
                 // Obliczamy nową pozycję piłki na podstawie jej prędkości i upływu czasu
-                if (time > 0)
-            {
 
                     Move += Speed * time;
-            }
-            else
-            {
-                Move = Speed;
-            }
-
-                _position += Move;
-                if (counter % 100 == 0)
-                {
-                    dao.addToBuffer(this);
-                    counter = 1;
-                }
+                    _position += Move;
 
             }
             catch (SynchronizationLockException exception)

@@ -48,16 +48,16 @@
                 <Grid x:Name="board" Width="500" Height="500" Margin="136,43,36,260" Grid.RowSpan="2" >
 
                     <Border BorderBrush="Gray" Background="DarkGreen" BorderThickness="3" Margin="-304,-25,272,-9">
-                        <ItemsControl ItemsSource="{Binding Balls}" Margin="0,-3,-15,4">
+                        <ItemsControl ItemsSource="{Binding Balls}" Margin="-10,-11,6,4">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <Canvas Height="575" Width="575" />
+                                    <Canvas Height="515" Width="515" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Ellipse Width= "20" Height="20" Fill="Red" Stroke="Black" StrokeThickness="1"/>
+                                    <Ellipse  Width="{Binding Diameter}" Height="{Binding Diameter}" Fill="Red" Stroke="Black" StrokeThickness="1"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
 
